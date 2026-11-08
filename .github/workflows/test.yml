@@ -1,0 +1,29 @@
+# The cask installs and the app it installs is signed.
+name: Test cask
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Tap this checkout
+        run: brew tap able1991/sozvon "$GITHUB_WORKSPACE"
+      - name: Style
+        run: brew style --cask able1991/sozvon/sozvon
+      - name: Audit
+        run: brew audit --cask --online able1991/sozvon/sozvon
+      - name: Install
+        run: brew install --cask able1991/sozvon/sozvon
+      - name: Check the app
+        run: |
+          test -d /Applications/Sozvon.app
+          codesign --verify --deep /Applications/Sozvon.app
+          spctl -a -vv /Applications/Sozvon.app
