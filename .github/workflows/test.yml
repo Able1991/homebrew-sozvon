@@ -18,10 +18,17 @@ jobs:
         run: brew tap able1991/sozvon "$GITHUB_WORKSPACE"
       - name: Style
         run: brew style --cask able1991/sozvon/sozvon
+      - name: Install the way a user does
+        run: |
+          brew install --cask able1991/sozvon/sozvon || {
+            echo "::warning::needs brew trust"
+            brew trust able1991/sozvon
+            brew install --cask able1991/sozvon/sozvon
+          }
       - name: Audit
-        run: brew audit --cask --online able1991/sozvon/sozvon
-      - name: Install
-        run: brew install --cask able1991/sozvon/sozvon
+        run: |
+          brew trust able1991/sozvon
+          brew audit --cask --online able1991/sozvon/sozvon
       - name: Check the app
         run: |
           test -d /Applications/Sozvon.app
